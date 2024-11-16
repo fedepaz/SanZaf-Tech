@@ -11,14 +11,14 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
+      await axios.post(
         "http://localhost:5000/api/auth/login",
-        { email, password }
+        { email, password },
+        { withCredentials: true }
       );
-      localStorage.setItem("token", response.data.token);
       navigate("/");
     } catch (error) {
-      console.error("Login failed:", error);
+      console.error("Login failed");
     }
   };
 

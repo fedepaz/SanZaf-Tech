@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { AppBar, Toolbar, Typography, Button } from "@mui/material";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Header: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -8,14 +9,37 @@ const Header: React.FC = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token);
+    checkAuthStatus();
   }, [location]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setIsLoggedIn(false);
-    navigate("/");
+  const checkAuthStatus = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/auth/status",
+        { withCredentials: true }
+      );
+      setIsLoggedIn(response.data.isLoggedIn);
+    } catch (error) {
+      setIsLoggedIn(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await axios.post(
+        "http://localhost:5000/api/auth/logout",
+        {},
+        { withCredentials: true }
+      );
+      setIsLoggedIn(false);
+
+      window.location.reload();
+      window.location.href = "/";
+
+      navigate("/");
+    } catch (error) {
+      console.error("Logout failed");
+    }
   };
 
   return (

@@ -28,10 +28,24 @@ const Home: React.FC = () => {
   const [deleteConfirmPost, setDeleteConfirmPost] = useState<Post | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editContent, setEditContent] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     fetchPosts();
+    checkAuthStatus();
   }, []);
+
+  const checkAuthStatus = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/auth/status",
+        { withCredentials: true }
+      );
+      setIsLoggedIn(response.data.isLoggedIn);
+    } catch (error) {
+      setIsLoggedIn(false);
+    }
+  };
 
   const fetchPosts = async () => {
     try {
@@ -55,12 +69,9 @@ const Home: React.FC = () => {
   const confirmDelete = async () => {
     if (deleteConfirmPost) {
       try {
-        const token = localStorage.getItem("token");
         await axios.delete(
           `http://localhost:5000/api/posts/${deleteConfirmPost._id}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          { withCredentials: true }
         );
         fetchPosts();
         setDeleteConfirmPost(null);
@@ -73,11 +84,10 @@ const Home: React.FC = () => {
   const handleUpdate = async () => {
     if (editingPost) {
       try {
-        const token = localStorage.getItem("token");
         await axios.put(
           `http://localhost:5000/api/posts/${editingPost._id}`,
           { title: editTitle, content: editContent },
-          { headers: { Authorization: `Bearer ${token}` } }
+          { withCredentials: true }
         );
         fetchPosts();
         setEditingPost(null);
@@ -104,8 +114,12 @@ const Home: React.FC = () => {
             <Typography variant="body2" component="p">
               {post.content}
             </Typography>
-            <Button onClick={() => handleEdit(post)}>Edit</Button>
-            <Button onClick={() => handleDelete(post)}>Delete</Button>
+            {isLoggedIn && (
+              <>
+                <Button onClick={() => handleEdit(post)}>Edit</Button>
+                <Button onClick={() => handleDelete(post)}>Delete</Button>
+              </>
+            )}
           </CardContent>
         </Card>
       ))}

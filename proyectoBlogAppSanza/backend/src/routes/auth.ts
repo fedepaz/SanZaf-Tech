@@ -45,6 +45,11 @@ authRoutes.post("/login", async (req, res): Promise<void> => {
     res.status(500).json({ error: "Login failed" });
   }
 });
+
+authRoutes.get("/status", (req, res) => {
+  res.json({ isLoggedIn: !!req.cookies.token });
+});
+
 authRoutes.post("/logout", (req, res) => {
   res.clearCookie("token");
   res.json({ message: "Logged out successfully" });
