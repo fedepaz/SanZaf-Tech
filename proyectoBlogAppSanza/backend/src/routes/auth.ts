@@ -35,10 +35,19 @@ authRoutes.post("/login", async (req, res): Promise<void> => {
       process.env.JWT_SECRET as string,
       { expiresIn: "1h" }
     );
-    res.json({ token });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 3600000,
+    });
+    res.json({ message: "Logged in successfully" });
   } catch (error) {
     res.status(500).json({ error: "Login failed" });
   }
+});
+authRoutes.post("/logout", (req, res) => {
+  res.clearCookie("token");
+  res.json({ message: "Logged out successfully" });
 });
 
 export default authRoutes;
