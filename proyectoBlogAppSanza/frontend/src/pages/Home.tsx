@@ -1,5 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Container, Typography, Card, CardContent } from "@mui/material";
+import {
+  Container,
+  Typography,
+  Card,
+  CardContent,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+} from "@mui/material";
 import axios from "axios";
 
 interface Post {
@@ -13,18 +24,68 @@ interface Post {
 
 const Home: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [editingPost, setEditingPost] = useState<Post | null>(null);
+  const [deleteConfirmPost, setDeleteConfirmPost] = useState<Post | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editContent, setEditContent] = useState("");
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/api/posts");
-        setPosts(response.data);
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-      }
-    };
     fetchPosts();
   }, []);
+
+  const fetchPosts = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/posts");
+      setPosts(response.data);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    }
+  };
+
+  const handleEdit = (post: Post) => {
+    setEditingPost(post);
+    setEditTitle(post.title);
+    setEditContent(post.content);
+  };
+
+  const handleDelete = (post: Post) => {
+    setDeleteConfirmPost(post);
+  };
+
+  const confirmDelete = async () => {
+    if (deleteConfirmPost) {
+      try {
+        const token = localStorage.getItem("token");
+        await axios.delete(
+          `http://localhost:5000/api/posts/${deleteConfirmPost._id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        fetchPosts();
+        setDeleteConfirmPost(null);
+      } catch (error) {
+        console.error("Error deleting post:", error);
+      }
+    }
+  };
+
+  const handleUpdate = async () => {
+    if (editingPost) {
+      try {
+        const token = localStorage.getItem("token");
+        await axios.put(
+          `http://localhost:5000/api/posts/${editingPost._id}`,
+          { title: editTitle, content: editContent },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        fetchPosts();
+        setEditingPost(null);
+      } catch (error) {
+        console.error("Error updating post:", error);
+      }
+    }
+  };
 
   return (
     <Container maxWidth="md">
@@ -43,9 +104,53 @@ const Home: React.FC = () => {
             <Typography variant="body2" component="p">
               {post.content}
             </Typography>
+            <Button onClick={() => handleEdit(post)}>Edit</Button>
+            <Button onClick={() => handleDelete(post)}>Delete</Button>
           </CardContent>
         </Card>
       ))}
+      <Dialog open={editingPost !== null} onClose={() => setEditingPost(null)}>
+        <DialogTitle>Edit Post</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Title"
+            fullWidth
+            value={editTitle}
+            onChange={(e) => setEditTitle(e.target.value)}
+          />
+          <TextField
+            margin="dense"
+            label="Content"
+            fullWidth
+            multiline
+            rows={4}
+            value={editContent}
+            onChange={(e) => setEditContent(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setEditingPost(null)}>Cancel</Button>
+          <Button onClick={handleUpdate}>Update</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={deleteConfirmPost !== null}
+        onClose={() => setDeleteConfirmPost(null)}
+      >
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete this post?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteConfirmPost(null)}>Cancel</Button>
+          <Button onClick={confirmDelete} color="error">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };
