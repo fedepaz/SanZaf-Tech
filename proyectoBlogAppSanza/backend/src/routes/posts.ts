@@ -1,6 +1,7 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import Post from "../models/Post";
+import asyncHandler from "../utils/asyncHandler";
 
 const postRoutes = express.Router();
 
@@ -15,58 +16,63 @@ const authenticateToken = (req: any, res: any, next: any) => {
   });
 };
 
-postRoutes.post("/", authenticateToken, async (req: any, res) => {
-  try {
+postRoutes.post(
+  "/",
+  authenticateToken,
+  asyncHandler(async (req: any, res: any) => {
     const { title, content } = req.body;
     const post = new Post({ title, content, author: req.user.userId });
     await post.save();
     res.status(201).json(post);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to create post" });
-  }
-});
+  })
+);
 
-postRoutes.get("/", async (req, res) => {
-  try {
+postRoutes.get(
+  "/",
+  asyncHandler(async (req: any, res: any) => {
     const posts = await Post.find().populate("author", "username");
     res.json(posts);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch posts" });
-  }
-});
+  })
+);
 
-postRoutes.put("/:id", authenticateToken, async (req: any, res: any) => {
-  try {
+postRoutes.put(
+  "/:id",
+  authenticateToken,
+  asyncHandler(async (req: any, res: any) => {
     const { title, content } = req.body;
     const post = await Post.findOneAndUpdate(
       { _id: req.params.id, author: req.user.userId },
       { title, content },
       { new: true }
     );
-    if (!post) {
-      res.status(404).json({ error: "Post not found or unauthorized" });
-      return;
-    }
-    res.json(post);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to update post" });
-  }
-});
 
-postRoutes.delete("/:id", authenticateToken, async (req: any, res: any) => {
-  try {
+    if (!post) {
+      const error: any = new Error("Post not found or unauthorized");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    res.json(post);
+  })
+);
+
+postRoutes.delete(
+  "/:id",
+  authenticateToken,
+  asyncHandler(async (req: any, res: any) => {
     const post = await Post.findOneAndDelete({
       _id: req.params.id,
       author: req.user.userId,
     });
+
     if (!post) {
-      res.status(404).json({ error: "Post not found or unauthorized" });
-      return;
+      const error: any = new Error("Post not found or unauthorized");
+      error.statusCode = 404;
+      throw error;
     }
+
     res.json({ message: "Post deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ error: "Failed to delete post" });
-  }
-});
+  })
+);
 
 export default postRoutes;

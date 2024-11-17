@@ -5,6 +5,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth";
 import postRoutes from "./routes/posts";
+import errorHandler from "./middleware/errorHandler";
 
 dotenv.config();
 
@@ -27,6 +28,8 @@ mongoose
 
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
