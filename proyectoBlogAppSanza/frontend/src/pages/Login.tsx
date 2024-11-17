@@ -3,7 +3,11 @@ import { Container, Typography, TextField, Button } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const Login: React.FC = () => {
+interface LoginProps {
+  onError: (error: any) => void;
+}
+
+const Login: React.FC<LoginProps> = ({ onError }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -18,7 +22,7 @@ const Login: React.FC = () => {
       );
       navigate("/");
     } catch (error) {
-      console.error("Login failed");
+      onError(error);
     }
   };
 

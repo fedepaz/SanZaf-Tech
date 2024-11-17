@@ -3,7 +3,11 @@ import { AppBar, Toolbar, Typography, Button } from "@mui/material";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  onError: (error: any) => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ onError }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -20,6 +24,7 @@ const Header: React.FC = () => {
       );
       setIsLoggedIn(response.data.isLoggedIn);
     } catch (error) {
+      onError(error);
       setIsLoggedIn(false);
     }
   };

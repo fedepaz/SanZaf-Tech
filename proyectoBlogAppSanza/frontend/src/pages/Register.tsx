@@ -3,7 +3,11 @@ import { Container, Typography, TextField, Button } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const Register: React.FC = () => {
+interface RegisterProps {
+  onError: (error: any) => void;
+}
+
+const Register: React.FC<RegisterProps> = ({ onError }) => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,7 +23,7 @@ const Register: React.FC = () => {
       });
       navigate("/login");
     } catch (error) {
-      console.error("Registration failed:", error);
+      onError(error);
     }
   };
 

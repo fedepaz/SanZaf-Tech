@@ -22,7 +22,11 @@ interface Post {
   };
 }
 
-const Home: React.FC = () => {
+interface HomeProps {
+  onError: (error: any) => void;
+}
+
+const Home: React.FC<HomeProps> = ({ onError }) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
   const [deleteConfirmPost, setDeleteConfirmPost] = useState<Post | null>(null);
@@ -43,7 +47,7 @@ const Home: React.FC = () => {
       );
       setIsLoggedIn(response.data.isLoggedIn);
     } catch (error) {
-      setIsLoggedIn(false);
+      onError(error);
     }
   };
 
@@ -52,7 +56,7 @@ const Home: React.FC = () => {
       const response = await axios.get("http://localhost:5000/api/posts");
       setPosts(response.data);
     } catch (error) {
-      console.error("Error fetching posts:", error);
+      onError(error);
     }
   };
 
@@ -76,7 +80,7 @@ const Home: React.FC = () => {
         fetchPosts();
         setDeleteConfirmPost(null);
       } catch (error) {
-        console.error("Error deleting post:", error);
+        onError(error);
       }
     }
   };
@@ -92,7 +96,7 @@ const Home: React.FC = () => {
         fetchPosts();
         setEditingPost(null);
       } catch (error) {
-        console.error("Error updating post:", error);
+        onError(error);
       }
     }
   };

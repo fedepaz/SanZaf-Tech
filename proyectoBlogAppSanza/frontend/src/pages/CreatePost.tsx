@@ -3,7 +3,11 @@ import { Container, Typography, TextField, Button } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const CreatePost: React.FC = () => {
+interface CreatePostProps {
+  onError: (error: any) => void;
+}
+
+const CreatePost: React.FC<CreatePostProps> = ({ onError }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const navigate = useNavigate();
@@ -18,7 +22,7 @@ const CreatePost: React.FC = () => {
       );
       navigate("/");
     } catch (error) {
-      console.error("Failed to create post:", error);
+      onError(error);
     }
   };
 
