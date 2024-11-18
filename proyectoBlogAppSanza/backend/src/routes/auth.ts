@@ -46,8 +46,6 @@ authRoutes.post(
       throw error;
     }
 
-    console.log("user " + user);
-
     const token = jwt.sign(
       { userId: user._id },
       process.env.JWT_SECRET as string,
@@ -60,6 +58,8 @@ authRoutes.post(
     });
 
     res.json({ message: "Logged in successfully" });
+    console.log("user ");
+    console.log(user);
   })
 );
 authRoutes.post("/logout", (req: Request, res: Response) => {
