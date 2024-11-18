@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import e, { Request, Response, NextFunction } from "express";
 import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -69,7 +69,7 @@ authRoutes.post("/logout", (req: Request, res: Response) => {
 
 authRoutes.get("/status", (req: Request, res: Response) => {
   console.log("status");
-  console.log(req.cookies);
+  console.log(!!req.cookies.token);
   res.json({ isLoggedIn: !!req.cookies.token });
 });
 
