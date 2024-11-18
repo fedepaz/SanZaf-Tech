@@ -64,11 +64,19 @@ authRoutes.post(
   })
 );
 
-authRoutes.post("/logout", (req: Request, res: Response) => {
-  res.clearCookie("token");
-  res.json({ message: "Logged out successfully" });
-});
+authRoutes.post(
+  "/logout",
+  asyncHandler(async (req: any, res: any) => {
+    res.cookie("token", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+      maxAge: 0,
+    });
 
+    res.status(200).json({ message: "Logged out successfully" });
+  })
+);
 authRoutes.get("/status", (req: Request, res: Response) => {
   console.log("status");
   console.log(!!req.cookies.token);
