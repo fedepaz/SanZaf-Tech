@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import e, { Request, Response, NextFunction } from "express";
 import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -54,20 +54,32 @@ authRoutes.post(
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 3600000, // 1 hour
+      sameSite: "none",
+      maxAge: 3600000,
     });
-    console.log("cookie " + token);
 
     res.json({ message: "Logged in successfully" });
+    console.log("user ");
+    console.log(user);
   })
 );
-authRoutes.post("/logout", (req: Request, res: Response) => {
-  res.clearCookie("token");
-  res.json({ message: "Logged out successfully" });
-});
 
+authRoutes.post(
+  "/logout",
+  asyncHandler(async (req: any, res: any) => {
+    res.cookie("token", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+      maxAge: 0,
+    });
+
+    res.status(200).json({ message: "Logged out successfully" });
+  })
+);
 authRoutes.get("/status", (req: Request, res: Response) => {
-  console.log("status " + req.cookies);
+  console.log("status");
+  console.log(!!req.cookies.token);
   res.json({ isLoggedIn: !!req.cookies.token });
 });
 

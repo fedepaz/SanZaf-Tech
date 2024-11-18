@@ -31,10 +31,11 @@ const Header: React.FC<HeaderProps> = ({ onError }) => {
       await logout();
       setIsLoggedIn(false);
 
-      window.location.reload();
-      window.location.href = "/";
+      localStorage.removeItem("user");
 
       navigate("/");
+      window.location.reload();
+      window.location.href = "/";
     } catch (error) {
       console.error("Logout failed");
     }

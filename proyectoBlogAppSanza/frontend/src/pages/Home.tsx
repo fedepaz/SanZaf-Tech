@@ -64,7 +64,6 @@ const Home: React.FC<HomeProps> = ({ onError }) => {
     checkAuthStatus();
   }, [fetchPostsFront, checkAuthStatus]);
 
-  console.log("useEffect " + posts);
   console.log("useEffect " + isLoggedIn);
 
   const handleEdit = (post: Post) => {
