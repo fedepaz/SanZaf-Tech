@@ -51,7 +51,9 @@ const Home: React.FC<HomeProps> = ({ onError }) => {
   const fetchPostsFront = useCallback(async () => {
     try {
       const response = await fetchPosts();
-      setPosts(response.data);
+      console.log(response.data);
+      const data = Array.isArray(response.data) ? response.data : [];
+      setPosts(data);
     } catch (error) {
       onError(error);
     }
