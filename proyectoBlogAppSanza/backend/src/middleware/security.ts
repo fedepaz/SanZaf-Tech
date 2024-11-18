@@ -11,23 +11,19 @@ export const configureSecurityMiddleware = (app: any) => {
   });
   app.use(limiter);
 
+  const allowedOrigins = [
+    "https://blogapp-seven.vercel.app/",
+    "https://blogapp-git-mainblog-fedepazs-projects.vercel.app/",
+    "https://blogapp-ax8hlwjx9-fedepazs-projects.vercel.app/",
+    "https://blogapp-git-master-fedepazs-projects.vercel.app/",
+    "https://blogapp-kdhoamw28-fedepazs-projects.vercel.app/",
+  ];
+
   const corsOptions = {
-    origin: (
-      origin: string | undefined,
-      callback: (err: Error | null, allow?: boolean) => void
-    ) => {
-      if (
-        process.env.NODE_ENV === "production" &&
-        origin &&
-        /\.vercel\.app$/.test(origin)
-      ) {
-        callback(null, true);
-      } else if (process.env.NODE_ENV !== "production") {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin:
+      process.env.NODE_ENV === "production"
+        ? allowedOrigins
+        : "http://localhost:3000",
     credentials: true,
     optionsSuccessStatus: 200,
   };
