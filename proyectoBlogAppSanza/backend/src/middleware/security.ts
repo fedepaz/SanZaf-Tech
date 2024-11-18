@@ -20,10 +20,16 @@ export const configureSecurityMiddleware = (app: any) => {
   ];
 
   const corsOptions = {
-    origin:
-      process.env.NODE_ENV === "production"
-        ? allowedOrigins
-        : "http://localhost:3000",
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void
+    ) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
     optionsSuccessStatus: 200,
   };
