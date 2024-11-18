@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Container,
   Typography,
@@ -11,7 +11,12 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-import axios from "axios";
+import {
+  deletePost,
+  fetchAuthStatus,
+  fetchPosts,
+  updatePost,
+} from "../services/queries";
 
 interface Post {
   _id: string;
@@ -34,31 +39,28 @@ const Home: React.FC<HomeProps> = ({ onError }) => {
   const [editContent, setEditContent] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  useEffect(() => {
-    fetchPosts();
-    checkAuthStatus();
-  }, []);
-
-  const checkAuthStatus = async () => {
+  const checkAuthStatus = useCallback(async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/auth/status",
-        { withCredentials: true }
-      );
+      const response = await fetchAuthStatus();
       setIsLoggedIn(response.data.isLoggedIn);
     } catch (error) {
       onError(error);
     }
-  };
+  }, [onError]);
 
-  const fetchPosts = async () => {
+  const fetchPostsFront = useCallback(async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/posts");
+      const response = await fetchPosts();
       setPosts(response.data);
     } catch (error) {
       onError(error);
     }
-  };
+  }, [onError]);
+
+  useEffect(() => {
+    fetchPostsFront();
+    checkAuthStatus();
+  }, [fetchPostsFront, checkAuthStatus]);
 
   const handleEdit = (post: Post) => {
     setEditingPost(post);
@@ -73,11 +75,8 @@ const Home: React.FC<HomeProps> = ({ onError }) => {
   const confirmDelete = async () => {
     if (deleteConfirmPost) {
       try {
-        await axios.delete(
-          `http://localhost:5000/api/posts/${deleteConfirmPost._id}`,
-          { withCredentials: true }
-        );
-        fetchPosts();
+        await deletePost(deleteConfirmPost._id);
+        fetchPostsFront();
         setDeleteConfirmPost(null);
       } catch (error) {
         onError(error);
@@ -88,12 +87,8 @@ const Home: React.FC<HomeProps> = ({ onError }) => {
   const handleUpdate = async () => {
     if (editingPost) {
       try {
-        await axios.put(
-          `http://localhost:5000/api/posts/${editingPost._id}`,
-          { title: editTitle, content: editContent },
-          { withCredentials: true }
-        );
-        fetchPosts();
+        await updatePost(editingPost._id, editTitle, editContent);
+        fetchPostsFront();
         setEditingPost(null);
       } catch (error) {
         onError(error);

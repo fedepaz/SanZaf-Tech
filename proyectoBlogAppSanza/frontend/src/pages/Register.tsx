@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Container, Typography, TextField, Button } from "@mui/material";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { register } from "../services/queries";
 
 interface RegisterProps {
   onError: (error: any) => void;
@@ -16,11 +16,7 @@ const Register: React.FC<RegisterProps> = ({ onError }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/auth/register", {
-        username,
-        email,
-        password,
-      });
+      await register(username, email, password);
       navigate("/login");
     } catch (error) {
       onError(error);

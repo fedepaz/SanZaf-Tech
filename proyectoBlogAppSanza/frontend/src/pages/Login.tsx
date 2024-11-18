@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Container, Typography, TextField, Button } from "@mui/material";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { login } from "../services/queries";
 
 interface LoginProps {
   onError: (error: any) => void;
@@ -15,11 +15,7 @@ const Login: React.FC<LoginProps> = ({ onError }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post(
-        "http://localhost:5000/api/auth/login",
-        { email, password },
-        { withCredentials: true }
-      );
+      await login(email, password);
       navigate("/");
     } catch (error) {
       onError(error);

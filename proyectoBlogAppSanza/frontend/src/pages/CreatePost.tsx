@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Container, Typography, TextField, Button } from "@mui/material";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { createPost } from "../services/queries";
 
 interface CreatePostProps {
   onError: (error: any) => void;
@@ -15,11 +15,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onError }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post(
-        "http://localhost:5000/api/posts",
-        { title, content },
-        { withCredentials: true }
-      );
+      await createPost(title, content);
       navigate("/");
     } catch (error) {
       onError(error);

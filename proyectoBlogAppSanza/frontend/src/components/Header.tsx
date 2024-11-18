@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { AppBar, Toolbar, Typography, Button } from "@mui/material";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { fetchAuthStatus, logout } from "../services/queries";
 
 interface HeaderProps {
   onError: (error: any) => void;
@@ -12,30 +12,23 @@ const Header: React.FC<HeaderProps> = ({ onError }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
-    checkAuthStatus();
-  }, [location]);
-
-  const checkAuthStatus = async () => {
+  const checkAuthStatus = useCallback(async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/auth/status",
-        { withCredentials: true }
-      );
+      const response = await fetchAuthStatus();
       setIsLoggedIn(response.data.isLoggedIn);
     } catch (error) {
       onError(error);
       setIsLoggedIn(false);
     }
-  };
+  }, [onError]);
+
+  useEffect(() => {
+    checkAuthStatus();
+  }, [checkAuthStatus, location]);
 
   const handleLogout = async () => {
     try {
-      await axios.post(
-        "http://localhost:5000/api/auth/logout",
-        {},
-        { withCredentials: true }
-      );
+      await logout();
       setIsLoggedIn(false);
 
       window.location.reload();
