@@ -9,7 +9,7 @@ export const configureSecurityMiddleware = (app: any) => {
     windowMs: 15 * 60 * 1000,
     max: 100,
   });
-  app.use(limiter);
+  //app.use(limiter);
 
   const allowedOrigins = [
     "https://blogapp-seven.vercel.app",
