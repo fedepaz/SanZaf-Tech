@@ -14,7 +14,7 @@ export const configureSecurityMiddleware = (app: any) => {
   const corsOptions = {
     origin:
       process.env.NODE_ENV === "production"
-        ? ["https://your-frontend-domain.vercel.app"]
+        ? ["https://san-zaf-tech.vercel.app"]
         : "http://localhost:3000",
     credentials: true,
     optionsSuccessStatus: 200,
