@@ -42,6 +42,7 @@ const Home: React.FC<HomeProps> = ({ onError }) => {
   const checkAuthStatus = useCallback(async () => {
     try {
       const response = await fetchAuthStatus();
+      console.log(response.data);
       setIsLoggedIn(response.data.isLoggedIn);
     } catch (error) {
       onError(error);
@@ -51,7 +52,6 @@ const Home: React.FC<HomeProps> = ({ onError }) => {
   const fetchPostsFront = useCallback(async () => {
     try {
       const response = await fetchPosts();
-      console.log(response.data);
       const data = Array.isArray(response.data) ? response.data : [];
       setPosts(data);
     } catch (error) {
@@ -63,6 +63,9 @@ const Home: React.FC<HomeProps> = ({ onError }) => {
     fetchPostsFront();
     checkAuthStatus();
   }, [fetchPostsFront, checkAuthStatus]);
+
+  console.log("useEffect " + posts);
+  console.log("useEffect " + isLoggedIn);
 
   const handleEdit = (post: Post) => {
     setEditingPost(post);
