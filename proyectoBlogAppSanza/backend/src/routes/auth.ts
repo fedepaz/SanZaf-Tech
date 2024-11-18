@@ -54,7 +54,8 @@ authRoutes.post(
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 3600000, // 1 hour
+      sameSite: "none",
+      maxAge: 3600000,
     });
 
     res.json({ message: "Logged in successfully" });
@@ -62,6 +63,7 @@ authRoutes.post(
     console.log(user);
   })
 );
+
 authRoutes.post("/logout", (req: Request, res: Response) => {
   res.clearCookie("token");
   res.json({ message: "Logged out successfully" });
