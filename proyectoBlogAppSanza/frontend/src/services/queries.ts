@@ -6,7 +6,6 @@ const api = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
 });
-
 export const fetchAuthStatus = () => api.get("/auth/status");
 export const logout = () => api.post("/auth/logout");
 export const createPost = (title: string, content: string) =>
