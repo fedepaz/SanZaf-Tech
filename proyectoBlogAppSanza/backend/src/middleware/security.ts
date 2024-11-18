@@ -12,10 +12,22 @@ export const configureSecurityMiddleware = (app: any) => {
   app.use(limiter);
 
   const corsOptions = {
-    origin:
-      process.env.NODE_ENV === "production"
-        ? ["https://blogapp-seven.vercel.app/"]
-        : "http://localhost:3000",
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void
+    ) => {
+      if (
+        process.env.NODE_ENV === "production" &&
+        origin &&
+        /\.vercel\.app$/.test(origin)
+      ) {
+        callback(null, true);
+      } else if (process.env.NODE_ENV !== "production") {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
     optionsSuccessStatus: 200,
   };
