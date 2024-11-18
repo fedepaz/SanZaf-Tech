@@ -61,10 +61,11 @@ const Home: React.FC<HomeProps> = ({ onError }) => {
 
   useEffect(() => {
     fetchPostsFront();
-    console.log("useEffect " + posts);
     checkAuthStatus();
-    console.log("useEffect " + isLoggedIn);
-  }, [fetchPostsFront, checkAuthStatus, isLoggedIn, posts]);
+  }, [fetchPostsFront, checkAuthStatus]);
+
+  console.log("useEffect " + posts);
+  console.log("useEffect " + isLoggedIn);
 
   const handleEdit = (post: Post) => {
     setEditingPost(post);

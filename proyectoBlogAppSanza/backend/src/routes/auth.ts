@@ -56,6 +56,7 @@ authRoutes.post(
       secure: process.env.NODE_ENV === "production",
       maxAge: 3600000, // 1 hour
     });
+    console.log("cookie " + token);
 
     res.json({ message: "Logged in successfully" });
   })
