@@ -66,6 +66,7 @@ authRoutes.post("/logout", (req: Request, res: Response) => {
 });
 
 authRoutes.get("/status", (req: Request, res: Response) => {
+  console.log("status " + req.cookies);
   res.json({ isLoggedIn: !!req.cookies.token });
 });
 
